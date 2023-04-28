@@ -1,0 +1,28 @@
+#! /bin/sh
+##########################################################################
+#    (c) Copyright 2021-2023 JRCS Ltd - All Rights Reserved              #
+##########################################################################
+
+{
+echo 'zone "." {'
+echo '    type static-stub;'
+echo '    server-addresses {'
+for svr in ${HSD_MASTERS}
+	do
+		echo "        ${svr};"
+	done
+echo "    };"
+echo "};"
+} > /opt/named/etc/root.inc
+
+extra="-4"
+if test "${WITH_BIND_V6}" = "Y"; then extra=""; fi
+
+if ! named-checkconf -t /opt/named
+	then
+		echo "======= ERROR ========"
+		sleep 5
+		exit 1
+	fi
+
+exec /usr/sbin/named -f ${extra} -u named -t /opt/named
