@@ -1,2 +1,3 @@
 ::respawn:/usr/local/bin/start_syslogd
 ::respawn:/usr/local/bin/start_bind
+::respawn:/usr/local/bin/start_eth_redirect
