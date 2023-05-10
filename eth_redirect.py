@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 # (c) Copyright 2022-2023, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
-""" module to resolve DNS queries into DoH JSON objects """
+""" module to resolve ETH domain via https://eth.link/ """
 
 import json
 import socket
