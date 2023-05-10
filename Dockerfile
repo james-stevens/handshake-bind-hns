@@ -3,23 +3,20 @@
 
 FROM alpine:3.16
 
-RUN apk update
-RUN apk upgrade
-
-RUN apk add bind
-
-RUN mkdir -p /opt /opt/named /opt/named /opt/named/etc
-RUN mkdir -p /opt/named/etc/bind /opt/named/zones /opt/named/var /opt/named/var/run
-
-RUN cp -a /etc/bind/rndc.key /opt/named/etc/bind
-
-RUN chown -R named: /opt/named/zones /opt/named/var
+RUN apk add bind python3 py3-dnspython py3-requests
 RUN rm -f /etc/periodic/monthly/dns-root-hints
 
-COPY inittab /etc/inittab
-COPY named.conf /opt/named/etc/bind
+RUN apk add tcpdump
 
-COPY start_syslogd /usr/local/bin
-COPY start_bind /usr/local/bin
+RUN rm -rf /run /tmp
+RUN ln -s /dev/shm /run
+RUN ln -s /dev/shm /tmp
+
+COPY inittab /etc/inittab
+COPY named.conf /usr/local/etc/
+
+COPY start_eth_redirect start_bind start_syslogd /usr/local/bin/
+COPY eth_redirect.py /usr/local/bin/
+RUN python3 -m compileall /usr/local/bin/
 
 CMD [ "/sbin/init" ]
