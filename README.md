@@ -36,7 +36,7 @@ Here's a very simple `haproxy` configuration, which should be all you need to ge
 	frontend doh-plain-http1-1
 		mode http
 		timeout client 10s
-		bind `EXTERNAL-IP`:443 v4v6 tfo ssl crt /opt/pems/<YOUR-PEM>.pem alpn h2,http/1.1
+		bind <EXTERNAL-IP>:443 v4v6 tfo ssl crt /opt/pems/<YOUR-PEM>.pem alpn h2,http/1.1
 		default_backend doh-server-plain-http2
 
 	backend doh-server-plain-http2
@@ -48,13 +48,13 @@ Here's a very simple `haproxy` configuration, which should be all you need to ge
 
 where
 
-`EXTERNAL-IP` is the external (e.g. internet) IP Address you want to access your DoH service from
+`<EXTERNAL-IP>` is the external (e.g. internet) IP Address you want to access your DoH service from
 
-`YOUR-PEM` is the name of your TLS PEM file, i.e. your private key signed by a CA
+`<YOUR-PEM>` is the name of your TLS PEM file, i.e. your private key signed by a CA
 
-`THIS-CONTAINER-1` is the IP Address of instance-1 of this container
+`<THIS-CONTAINER-1>` is the IP Address of instance-1 of this container
 
-`THIS-CONTAINER-2` is the IP Address of instance-2 of this container
+`<THIS-CONTAINER-2>` is the IP Address of instance-2 of this container
 
 NOTE: the path of the doh service is `/doh`, so you will need to put `https://some.host.name/doh` into your browser.
 where `some.host.name` resolves to `EXTERNAL-IP` and `YOUR-PEM` is valid for that hostname.
