@@ -3,4 +3,4 @@
 #    (c) Copyright 2021-2023 JRCS Ltd - All Rights Reserved              #
 ##########################################################################
 
-exec /usr/local/bin/eth_redirect.py 2>&1 | logger -t eth_redirect
+exec /usr/local/bin/eth_redirect.py -s -t 10 2>&1 | logger -t eth_redirect

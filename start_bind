@@ -12,12 +12,17 @@ chown -R named: ${base}/zones ${base}/var
 cp /usr/local/etc/named.conf ${base}/etc/bind
 
 
-{
-echo 'zone "." {'
-echo '    type static-stub;'
-echo "    server-addresses { ${HSD_MASTERS}; };"
-echo "};"
-} > ${base}/etc/root.inc
+if test "${HSD_MASTERS}"
+	then
+		{
+		echo 'zone "." {'
+		echo '    type static-stub;'
+		echo "    server-addresses { ${HSD_MASTERS}; };"
+		echo "};"
+		} > ${base}/etc/root.inc
+	else
+		touch ${base}/etc/root.inc
+	fi
 
 
 extra="-4"

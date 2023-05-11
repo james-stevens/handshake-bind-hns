@@ -1,7 +1,7 @@
 # (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
 # Alternative license arrangements are possible, contact me for more information
 
-FROM alpine:3.16
+FROM alpine:3.18
 
 RUN apk add bind python3 py3-dnspython py3-requests
 RUN rm -f /etc/periodic/monthly/dns-root-hints
