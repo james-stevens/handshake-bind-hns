@@ -36,7 +36,7 @@ Here's a very simple `haproxy` configuration, which should be all you need to ge
 	frontend doh-plain-http1-1
 		mode http
 		timeout client 10s
-		bind <EXTERNAL-IP>:443 v4v6 tfo ssl crt /opt/pems/<YOUR-PEM>.pem alpn h2,http/1.1
+		bind `EXTERNAL-IP`:443 v4v6 tfo ssl crt /opt/pems/<YOUR-PEM>.pem alpn h2,http/1.1
 		default_backend doh-server-plain-http2
 
 	backend doh-server-plain-http2
