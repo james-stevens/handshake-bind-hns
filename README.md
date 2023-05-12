@@ -1,6 +1,6 @@
 # A Universal DNS Resolver of ICANN & Web3 Names
 
-Higher throughput resolving ICANN, Handshake and `.eth` domain names using `bind` using an external [`hsd`](https://github.com/handshake-org/hsd)
+Higher throughput resolving ICANN, Handshake and `.eth` domain names using `bind` using an external [Handshake node, `hsd`](https://github.com/handshake-org/hsd)
 
 This is a container that runs a DNS resolver using ISC's `bind` to get higher through-put,
 but referring ROOT queries to instance(s) of `hsd`, so it can resolve Handshake names.
