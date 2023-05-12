@@ -1,4 +1,4 @@
-# handshake-bind-hns
+# handshake-bind-hns - A Universal DNS Resolver of Web3 Names
 
 Higher throughput resolving ICANN, Handshake and `.eth` domain names using `bind` using an external `hsd`
 
@@ -18,12 +18,14 @@ with the IP Address of your syslog server, otherwise it will syslog to `stdout`.
 Set the environment variable `WITH_BIND_V6` to `Y` to get IPv6 support, otherwise `bind` will run in IPv4 mode only.
 
 
-## ETH Support
+# ETH Support
 
 This resolver can also resolve `eth` names via `https://eth.link/` - this is pretty slow, but answers will be held in local cache.
 
+As `.eth` names are resolved via the resolver, so will work in both traditional DNS & DoH.
 
-## DoH Support
+
+# DoH Support
 
 From v9.17.10 onwards ISC's `bind` now has native DoH support, which is enabled & available in this container.
 
@@ -62,3 +64,7 @@ Where `some.host.name` resolves to `EXTERNAL-IP` and `YOUR-PEM` is valid for tha
 Using the path `/doh` can be useful if you want your DoH service to co-exist on the same host name as other web services,
 as you can then redirect to the DoH service based on the path.
 
+
+# docker.com
+
+https://hub.docker.com/r/jamesstevens/handshake-bind-hns
