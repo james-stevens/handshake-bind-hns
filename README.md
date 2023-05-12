@@ -50,11 +50,15 @@ where
 
 `<EXTERNAL-IP>` is the external (e.g. internet) IP Address you want to access your DoH service from
 
-`<YOUR-PEM>` is the name of your TLS PEM file, i.e. your private key signed by a CA
+`<YOUR-PEM>` is the name of your TLS PEM file, i.e. a PEM of both your private key & CA Certificiate
 
 `<THIS-CONTAINER-1>` is the IP Address of instance-1 of this container
 
 `<THIS-CONTAINER-2>` is the IP Address of instance-2 of this container
 
-NOTE: the path of the doh service is `/doh`, so you will need to put `https://some.host.name/doh` into your browser.
-where `some.host.name` resolves to `EXTERNAL-IP` and `YOUR-PEM` is valid for that hostname.
+NOTE: The path of the DoH service can either be `/` or `/doh`, so you'd put `https://some.host.name/` or `https://some.host.name/doh` into your browser.
+Where `some.host.name` resolves to `EXTERNAL-IP` and `YOUR-PEM` is valid for that hostname.
+
+Using the path `/doh` can be useful if you want your DoH service to co-exist on the same host name as other web services,
+as you can then redirect to the DoH service based on the path.
+
