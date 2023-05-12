@@ -1,4 +1,4 @@
-# A Universal DNS Resolver of Web3 Names
+# A Universal DNS Resolver of ICANN & Web3 Names
 
 Higher throughput resolving ICANN, Handshake and `.eth` domain names using `bind` using an external `hsd`
 
