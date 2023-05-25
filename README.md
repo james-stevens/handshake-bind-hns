@@ -20,17 +20,20 @@ Set the environment variable `WITH_BIND_V6` to `Y` to get IPv6 support, otherwis
 
 # ETH Support
 
-This resolver can also resolve `eth` names via `https://eth.link/` - this is pretty slow, but answers will be held in local cache.
+ENS domains (domains ending `.eth`) are supported by redirecting them to `eth.limo` - I think this creates a better
+user experience than trying to resolve IP Addresses as so few ENS names use DNS this way.
 
-As `.eth` names are resolved via the resolver, so will work in both traditional DNS & DoH.
+It should be possible to do a `getContent` on the name & use the CID to redirect to the user's content via
+`ipfs.io`, but I think `eth.limo` will do this anyway.
+
 
 
 # DoH Support
 
 From v9.17.10 onwards ISC's `bind` now has native DoH support, which is enabled & available in this container.
 
-However, `bind` DoH has been deliberately set to run in HTTP mode only, so you will need to run an external TLS off-loader
-to get TLS support. A good choice is `haproxy`. This can also be used to provide load-balalncing & failover
+However, `bind` DoH has been deliberately set to run in HTTP mode only, so you will need to run an external TLS off-loader/shedder
+to get the TLS support. A good choice is `haproxy`. This can also be used to provide load-balalncing & failover
 between multiple instances of this container.
 
 Here's a very simple `haproxy` configuration, which should be all you need to get TLS & load-balancing/failover support.
