@@ -32,8 +32,8 @@ It should be possible to do a `getContent` on the name & use the CID to redirect
 
 From v9.17.10 onwards ISC's `bind` now has native DoH support, which is enabled & available in this container.
 
-However, `bind` DoH has been deliberately set to run in HTTP mode only, so you will need to run an external TLS off-loader
-to get TLS support. A good choice is `haproxy`. This can also be used to provide load-balalncing & failover
+However, `bind` DoH has been deliberately set to run in HTTP mode only, so you will need to run an external TLS off-loader/shedder
+to get the TLS support. A good choice is `haproxy`. This can also be used to provide load-balalncing & failover
 between multiple instances of this container.
 
 Here's a very simple `haproxy` configuration, which should be all you need to get TLS & load-balancing/failover support.
