@@ -10,4 +10,4 @@ if ! test "${UWR_IP_ADDRESSES}"
 		exit 1
 	fi
 
-exec /usr/local/bin/eth_limo.py -s -l -u "${UWR_IP_ADDRESSES}" 2>&1 | logger -t eth_limo
+exec /usr/local/bin/eth_limo.py -u "${UWR_IP_ADDRESSES}" 2>&1 | logger -t eth_limo
