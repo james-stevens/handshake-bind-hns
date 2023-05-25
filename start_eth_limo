@@ -3,4 +3,11 @@
 #    (c) Copyright 2021-2023 JRCS Ltd - All Rights Reserved              #
 ##########################################################################
 
-exec /usr/local/bin/eth_redirect.py -t 10 2>&1 | logger -t eth_redirect
+if ! test "${UWR_IP_ADDRESSES}"
+	then
+		echo "======= ERROR: 'UWR_IP_ADDRESSES' is not defined"
+		sleep 5
+		exit 1
+	fi
+
+exec /usr/local/bin/eth_limo.py -u "${UWR_IP_ADDRESSES}" 2>&1 | logger -t eth_limo

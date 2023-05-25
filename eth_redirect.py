@@ -25,7 +25,7 @@ sock.bind((AUTH_IP, 53))
 
 queries = {}
 to_syslog = False
-with_logging = True
+with_logging = False
 
 
 def log(line):

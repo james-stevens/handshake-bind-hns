@@ -15,8 +15,8 @@ RUN ln -s /dev/shm /tmp
 COPY inittab /etc/inittab
 COPY named.conf /usr/local/etc/
 
-COPY start_eth_redirect start_bind start_syslogd /usr/local/bin/
-COPY eth_redirect.py /usr/local/bin/
+COPY start_eth_limo start_bind start_syslogd /usr/local/bin/
+COPY eth_limo.py /usr/local/bin/
 RUN python3 -m compileall /usr/local/bin/
 
 CMD [ "/sbin/init" ]
