@@ -15,7 +15,7 @@ from dns import message, rrset, rdatatype
 
 AUTH_IP = "127.1.0.1"
 
-ETH_LINK_BASE_URL = "https://eth.link/dns-query"
+ETH_UNIX_SOCKET = "/run/eth_api"
 DNS_MAX_QUERY = 1024
 DEFAULT_TTL = 3600
 MAX_THREADS = 20
