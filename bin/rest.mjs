@@ -7,7 +7,7 @@ import { Id } from '@imperviousinc/id';
 import { AlchemyProvider, Contract, parseEther } from 'ethers';
 import contentHash from "content-hash";
 
-const provider = new AlchemyProvider(null, "I1iLOFKvcQ5NEt7GnYfmQDwXpYipWPaw");
+const provider = new AlchemyProvider(null, process.env.ALCHEMY_API_CODE);
 const network = await provider.getNetwork() ;
 
 const id = new Id({network, provider});

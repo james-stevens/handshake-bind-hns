@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 # (c) Copyright 2022-2023, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
-""" module to resolve ETH domain via https://eth.link/ """
+""" module to resolve ETH & impervious domains """
 
 from syslog import syslog
 import argparse
@@ -15,10 +15,17 @@ from dns import message, rrset, rdatatype
 
 AUTH_IP = "127.1.0.1"
 
-ETH_UNIX_SOCKET = "/run/eth_api"
+ETH_LINK_BASE_URL = "http://127.0.0.1:8081/"
 DNS_MAX_QUERY = 1024
 DEFAULT_TTL = 3600
 MAX_THREADS = 20
+
+KNOWN_CODECS = {
+    "ipns-ns": "https://ipfs.io/ipns/{value}",
+    "ipfs-ns": "https://ipfs.io/ipfs/{value}"
+    }
+
+LIMO_URL = "https://{eth_name}.limo/"
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((AUTH_IP, 53))
@@ -47,13 +54,8 @@ def run_resolver(idx):
         me.clean_up()
 
 
-def add_soa(reply):
-    reply.authority.append(
-        rrset.from_text("eth.", DEFAULT_TTL, "IN", "SOA",
-                        "eth. eth. 1 10800 3600 604800 3600"))
-
-
 class Resolver:
+
     def __init__(self, idx):
         self.eth_link = requests.Session()
         self.eth_link.headers.update({"content-type": "application/dns-json"})
@@ -67,6 +69,10 @@ class Resolver:
                                        args=(self.idx, ),
                                        daemon=True)
 
+    def add_soa(self,reply):
+        reply.authority.append(
+            rrset.from_text(self.query.tld+".", DEFAULT_TTL, "IN", "SOA",
+                            f"{self.query.tld}. {self.query.tld}. 1 10800 3600 604800 3600"))
     def run(self):
         self.thread.start()
 
@@ -75,43 +81,59 @@ class Resolver:
         reply.flags = self.query.line_query.flags | 0x8400
         reply.set_rcode(rcode)
         reply.id = self.query.asker[0]
-        add_soa(reply)
+        self.add_soa(reply)
         sock.sendto(reply.to_wire(), self.query.asker[1])
+
+    def url_from_data(self, js_ans):
+        base = "1 1 " if self.query.rdtype == rdatatype.URI else " "
+        if "codec" in js_ans and js_ans["codec"] in KNOWN_CODECS:
+            return base + KNOWN_CODECS[js_ans["codec"]].format(value=js_ans["value"])
+        return base + LIMO_URL.format(eth_name=self.query.eth_name)
 
     def answer(self):
         if self.query is None:
             return
         qry = self.query
 
-        if qry.qname[-4:] != ".eth" and qry.qname != "eth":
-            return self.error(5)
+        if qry.rdtype == rdatatype.URI or qry.rdtype == rdatatype.TXT:
+            url = f"{ETH_LINK_BASE_URL}content/{qry.eth_name}"
+        else:
+            url = f"{ETH_LINK_BASE_URL}dns/{qry.eth_name}/{qry.qtype}"
 
-        params = {"name": qry.qname, "type": qry.qtype}
+        log(f"ASKING: {url}")
         try:
-            answer = self.eth_link.get(ETH_LINK_BASE_URL, params=params)
+            answer = self.eth_link.get(url)
         except requests.exceptions.RequestException:
             return
+
+        log(f"ANSWER >>>>> {len(answer.content)} : {answer.content}")
 
         reply = message.make_response(qry.line_query)
         reply.index = None
         reply.flags = 0x8400
         reply.id = qry.asker[0]
-        add_soa(reply)
+        self.add_soa(reply)
+
+        if len(answer.content) == 0:
+            if qry.rdtype == rdatatype.A:
+                for ip in uwr_ips:
+                    reply.answer.append(
+                        rrset.from_text(qry.qname + ".", DEFAULT_TTL, "IN", "A",
+                                        ip))
+            if qry.rdtype == rdatatype.URI or qry.rdtype == rdatatype.TXT:
+                reply.answer.append(rrset.from_text(f"{qry.qname}.", DEFAULT_TTL, "IN", qry.qtype, self.url_from_data({})))
+            sock.sendto(reply.to_wire(), qry.asker[1])
+            return
 
         try:
             js_ans = json.loads(answer.content)
         except json.JSONDecodeError:
             return
 
-        if "Status" in js_ans and js_ans["Status"] != 0:
-            return self.error(js_ans["Status"])
-
-        for rr in js_ans["Answer"]:
-            ttl = rr["ttl"] if "ttl" in rr else DEFAULT_TTL
-            ttl = rr["TTL"] if "TTL" in rr else ttl
-            reply.answer.append(
-                rrset.from_text(rr["name"] + ".", ttl, "IN", rr["type"],
-                                rr["data"]))
+        if qry.rdtype == rdatatype.URI or qry.rdtype == rdatatype.TXT:
+            reply.answer.append(rrset.from_text(f"{qry.qname}.", DEFAULT_TTL, "IN", qry.qtype, self.url_from_data(js_ans)))
+        else:
+            reply.answer.append(rrset.from_text(js_ans["name"]+".",js_ans["ttl"],js_ans["class"],js_ans["type"],js_ans["data"]))
 
         sock.sendto(reply.to_wire(), qry.asker[1])
 
@@ -123,13 +145,18 @@ class Resolver:
 
 
 class Query:
+
     def __init__(self, qry, sender):
         self.line_query = qry
         self.qname = str(qry.question[0].name)[:-1]
+        self.eth_name = self.qname[11:] if self.qname[:11] == "_http._tcp." else self.qname
         self.rdtype = qry.question[0].rdtype
         self.qtype = rdatatype.to_text(self.rdtype)
         self.key = f"{self.rdtype}|{self.qname}"
         self.asker = (qry.id, sender)
+        self.tld = self.eth_name
+        if (pos := self.eth_name.find(".")) >= 0:
+            self.tld = self.eth_name[pos+1:]
 
 
 def find_next():
@@ -148,7 +175,10 @@ parser = argparse.ArgumentParser(description='EPP Jobs Runner')
 parser.add_argument("-t", '--threads', default=2)
 parser.add_argument("-s", '--syslog', action="store_true", default=False)
 parser.add_argument("-l", '--logging', action="store_true")
+parser.add_argument("-u", '--uwr', required=True)
 args = parser.parse_args()
+
+uwr_ips = args.uwr.split(",")
 
 to_syslog = args.syslog
 with_logging = args.logging
