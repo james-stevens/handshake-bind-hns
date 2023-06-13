@@ -3,6 +3,12 @@
 
 FROM alpine:3.18
 
+RUN apk update
+RUN apk upgrade
+
+RUN apk add nodejs npm
+RUN npm install -g express @imperviousinc/id ethers content-hash
+
 RUN apk add bind python3 py3-dnspython py3-requests
 RUN rm -f /etc/periodic/monthly/dns-root-hints
 
@@ -15,8 +21,7 @@ RUN ln -s /dev/shm /tmp
 COPY inittab /etc/inittab
 COPY named.conf /usr/local/etc/
 
-COPY start_eth_limo start_bind start_syslogd /usr/local/bin/
-COPY eth_limo.py /usr/local/bin/
+COPY bin /usr/local/bin/
 RUN python3 -m compileall /usr/local/bin/
 
 CMD [ "/sbin/init" ]

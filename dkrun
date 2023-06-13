@@ -2,6 +2,7 @@
 
 docker run -it \
 	--read-only \
+	--env "ALCHEMY_API_CODE=${ALCHEMY_API_CODE}" \
 	--env "UWR_IP_ADDRESSES=78.129.239.31" \
 	--env "HSD_MASTERS=192.168.8.10;192.168.8.20" \
 	-p 127.0.0.8:53:53 -p 127.0.0.8:53:53/udp \
