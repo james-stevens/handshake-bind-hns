@@ -5,10 +5,8 @@ Higher throughput resolving ICANN, Handshake and `.eth` domain names using `bind
 This is a container that runs a DNS resolver using ISC's `bind` to get higher through-put,
 but referring ROOT queries to instance(s) of `hsd`, so it can resolve Handshake names.
 
-It also runs a proxy to `eth.link` to resolve `.eth` domains.
-
 When you run this container, pass the environment variable `HSD_MASTERS` to a semi-coloon separated list of the IP Addresses your `hsd` instances.
-If `HSD_MASTERS` is not set the Handshake feature is disabled, and only ICANN & `.eth` are supported.
+If `HSD_MASTERS` is not set the Handshake feature is disabled, and only ICANN & `.eth` are supported (see below for `eth` support).
 
 The `hsd` IP Addresses must be the ones that will respond with authritative answers (`--ns-host`).
 
@@ -20,12 +18,25 @@ Set the environment variable `WITH_BIND_V6` to `Y` to get IPv6 support, otherwis
 
 # ETH Support
 
-ENS domains (domains ending `.eth`) are supported by redirecting them to `eth.limo` - I think this creates a better
-user experience than trying to resolve IP Addresses as so few ENS names use DNS this way.
+ENS domains (domains ending `.eth`) are supported by using an Alchemy RPC account, which must be passed into the container as the
+environment variable `ALCHEMY_API_CODE`.
 
-It should be possible to do a `getContent` on the name & use the CID to redirect to the user's content via
-`ipfs.io`, but I think `eth.limo` will do this anyway.
+When you request a DNS record, the first thing it will do is try & find the record you asked for. If this fails, and you asked for 
+an IPv4 address, you will be given the IP of a [Universal Web Redirector](https://github.com/james-stevens/universal-web-redirect).
+This UWR will then request a URI to send you to.
 
+The ETH support first looks for a `content` record in the domain. If the domain has an IPFS or IPNS content record, you will be redirected to
+`https://ipfs.io/....`, if no `content` record exists, you will be rediected to `https://<eth-name>.eth.limo/`
+
+Impervious `forever` domains are handled the same way, except the final redirection is `https://<eth-name>.forever.limo/`, 
+which probably doesn't do anything useful.
+
+
+For this service to work correctly, you must set the environmant variables
+
+`ALCHEMY_API_CODE` - An Alchemy RPC account API code
+
+`UWR_IP_ADDRESSES` - A comma separated list of IPv4 addresses of Universal Web Redirector servers
 
 
 # DoH Support
@@ -69,5 +80,7 @@ as you can then redirect to the DoH service based on the path.
 
 
 # docker.com
+
+The lastest build of this container is available from docker.com
 
 https://hub.docker.com/r/jamesstevens/handshake-bind-hns
