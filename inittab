@@ -2,3 +2,4 @@
 ::respawn:/usr/local/bin/start_bind
 ::respawn:/usr/local/bin/rest.mjs
 ::respawn:/usr/local/bin/start_eth_redirect
+::respawn:/usr/local/bin/start_exporter
