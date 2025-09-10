@@ -1,0 +1,5 @@
+.depends.*
+depends
+depends.include
+*.o
+root_proxy

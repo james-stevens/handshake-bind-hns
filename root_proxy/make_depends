@@ -1,0 +1,18 @@
+#! /bin/sh
+
+find -maxdepth 1 -name '*.c' -printf "%f\n" | grep -Fv '.depends.' | \
+        awk '{
+                print "-include .depends." _ $0 > "depends.include"
+                l=l _ " .depends." _ $0;
+                x = x _ " " _ $$0;
+                bn=substr($0,1,length($0)-2);
+
+                printf ".depends.%s: %s\n",$0,$0
+                printf "\t$(CC) -MM %s > .depends.%s\n",$0,$0,$0
+                printf "\t$(CC) -MM -MT %s.lo %s >> .depends.%s\n",bn,$0,$0
+
+                if (0) printf "\tsh -c \"make %s.o\"\n",substr($0,1,index($0,".")-1)
+                print ""
+                }' > depends
+
+exit 0
