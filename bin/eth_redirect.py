@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-# (c) Copyright 2022-2023, James Stevens ... see LICENSE for details
+# (c) Copyright 2022-2025, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
 """ module to resolve ETH & impervious domains """
 
