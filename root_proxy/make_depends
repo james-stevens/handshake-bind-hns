@@ -1,4 +1,7 @@
 #! /bin/sh
+#################################################################
+#    (c) Copyright 2009-2025 JRCS Ltd  - All Rights Reserved    #
+#################################################################
 
 find -maxdepth 1 -name '*.c' -printf "%f\n" | grep -Fv '.depends.' | \
         awk '{

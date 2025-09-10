@@ -1,10 +1,8 @@
 /*
     #################################################################
-    #    (c) Copyright 2009-2022 JRCS Ltd  - All Rights Reserved    #
+    #    (c) Copyright 2009-2025 JRCS Ltd  - All Rights Reserved    #
     #################################################################
 */
-
-
 #ifndef _INCLUDE_LOG_MESSAGE
 #define _INCLUDE_LOG_MESSAGE
 

@@ -1,5 +1,5 @@
 #
-# (c) Copyright 2025 JRCS Ltd - All Right Reserved
+# (c) Copyright 2020-2025 JRCS Ltd - All Right Reserved
 #
 CC=gcc
 CFLAGS=-O2 -Wall -Wextra -Wshadow -pedantic -Wno-variadic-macros -Wnull-dereference -Wformat=2 -Wno-format-y2k
