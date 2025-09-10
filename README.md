@@ -31,6 +31,8 @@ The ETH support first looks for a `content` record in the domain. If the domain 
 Impervious `forever` domains are handled the same way, except the final redirection is `https://<eth-name>.forever.limo/`, 
 which probably doesn't do anything useful.
 
+Try `dig @<this-container> bitsofcode.eth uri`
+
 
 For this service to work correctly, you must set the environmant variables
 

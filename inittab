@@ -1,4 +1,6 @@
 ::respawn:/usr/local/bin/start_syslogd
+::respawn:/usr/local/bin/start_root_proxy 1
+::respawn:/usr/local/bin/start_root_proxy 2
 ::respawn:/usr/local/bin/start_bind
 ::respawn:/usr/local/bin/rest.mjs
 ::respawn:/usr/local/bin/start_eth_redirect

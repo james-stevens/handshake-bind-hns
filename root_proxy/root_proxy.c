@@ -22,12 +22,12 @@
 typedef uint16_t id_t;
 #define MAX_HANDSHAKE 20
 #define MAX_RESP 0x10000
-#define MAX_PACKET 512
+#define MAX_QUERY 512
 #define MAX_EACH_PROXY 0x10000
 struct each_proxy_st {
 	id_t id,old_id;
 	struct net_addr_st from_ni;
-	unsigned char query[MAX_PACKET];
+	unsigned char query[MAX_QUERY];
 	int query_len;
 	} each_proxy[MAX_EACH_PROXY];
 
@@ -62,7 +62,7 @@ void sig(int s) { if (s==SIGALRM) exit(91); interupt=s; }
 
 void stats_channel(FILE *prom_fp, char *who,struct stats_channel_st *ch)
 {
-	logmsg(MSG_DEBUG,"%10s: QRY %ld pkts, %ld bytes - RESP %ld pkts, %ld bytes\n",
+	logmsg(MSG_HIGH,"%10s: QRY %ld pkts, %ld bytes - RESP %ld pkts, %ld bytes\n",
 		who,ch->qry.count,ch->qry.bytes,ch->resp.count,ch->resp.bytes);
 	if (!prom_fp) return;
 	fprintf(prom_fp,"root_proxy_%s_query_count %ld\n",who,ch->qry.count);
@@ -80,7 +80,7 @@ FILE *prom_fp = NULL;
 	stats_channel(prom_fp,"client",&stats.client);
 	stats_channel(prom_fp,"icann",&stats.icann);
 	stats_channel(prom_fp,"handshake",&stats.handshake);
-	fclose(prom_fp);
+	if (prom_fp) fclose(prom_fp);
 }
 
 
@@ -268,8 +268,6 @@ struct net_addr_st client_ni;
 			}
 		}
 
-	for(int l=0;l<num_handshake;l++)
-		logmsg(MSG_DEBUG,"handshake %s:%d\n",IPCHAR(handshake_ni[l]),handshake_ni[l].port);
 
 	if (!icann_ni.is_type) decode_net_addr(&icann_ni,"192.5.5.241"); // F-ROOT
 	if (!server_ni.is_type) decode_net_addr(&server_ni,"127.0.0.9");
@@ -278,6 +276,12 @@ struct net_addr_st client_ni;
 
 	if (!server_ni.port) server_ni.port = PORT_DNS;
 	if (!icann_ni.port) icann_ni.port = PORT_DNS;
+
+	for(int l=0;l<num_handshake;l++)
+		logmsg(MSG_DEBUG,"handshake %s:%d\n",IPCHAR(handshake_ni[l]),handshake_ni[l].port);
+	logmsg(MSG_DEBUG,"icann %s:%d\n",IPCHAR(icann_ni),icann_ni.port);
+	logmsg(MSG_DEBUG,"server %s:%d\n",IPCHAR(server_ni),server_ni.port);
+	logmsg(MSG_DEBUG,"client %s:%d\n",IPCHAR(client_ni),client_ni.port);
 
 	icann_sock = udp_client_any(&client_ni,0);
 	handshake_sock = udp_client_any(&client_ni,0);
